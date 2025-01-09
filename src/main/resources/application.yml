@@ -10,6 +10,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
 server:
   port: 5656
@@ -17,3 +18,8 @@ server:
 logging:
   level:
     root: INFO
+
+#jwt
+jwt:
+  secret: "bWJhbmstdGVzdC1wcm9qZWN0LXNlY3JldC1rZXkgbWV0YSBtYWluIGNoYW5uZWwgY29tcGxleCBpc3N1ZXMu"
+  lifetime: "5m"
