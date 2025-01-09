@@ -7,10 +7,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collections;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -32,20 +35,37 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         String token = request.getHeader(AUTH_HEADER);
-        if (token == null || !token.startsWith("Bearer ")) {
+        if (token == null || !token.startsWith(BEARER_PREFIX)) {
             filterChain.doFilter(request, response);
             return;
         }
         token = token.substring(BEARER_PREFIX.length());
-
-        if (jwtUtils.validateToken(token, VALID_USERNAME)) {
-            logger.info("Токен действителен для пользователя: {}",VALID_USERNAME);
-            filterChain.doFilter(request, response);
-        } else {
-            logger.warn("Неправильный токен: {}", token);
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Неправильный токен!");
+        try{
+            if (jwtUtils.validateToken(token, VALID_USERNAME)) {
+                logger.info("Токен действителен для пользователя: {}",VALID_USERNAME);
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(VALID_USERNAME, null, Collections.emptyList());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                filterChain.doFilter(request, response);
+            } else {
+                logger.warn("Неправильный токен: {}", token);
+                sendXmlErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Неправильный токен!");
+            }
+        }catch (Exception e){
+            logger.warn("Токен отсутствует или недействителен!");
+            sendXmlErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Токен отсутствует или недействителен!");
         }
-        logger.warn("Токен отсутствует или недействителен!");
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Токен отсутствует или недействителен!");
+    }
+
+    private void sendXmlErrorResponse(HttpServletResponse response, int statusCode, String message) throws IOException {
+        response.setStatus(statusCode);
+        response.setContentType("application/xml; charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        String xmlResponse = String.format(
+                "<errorResponse><code>%d</code><message>%s</message></errorResponse>",
+                statusCode, message
+        );
+        response.getWriter().write(xmlResponse);
+        response.getWriter().flush();
     }
 }

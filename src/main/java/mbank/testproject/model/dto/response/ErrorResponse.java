@@ -2,9 +2,9 @@ package mbank.testproject.model.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
 
-@JsonRootName("paymentResponse")
-public record PaymentResponse(
-        String status,
+@JsonRootName("errorResponse")
+public record ErrorResponse(
+        int code,
         String message
 ) {
 }
