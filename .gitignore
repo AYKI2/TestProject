@@ -43,3 +43,4 @@ Thumbs.db
 # Логи
 *.log
 
+src/main/resources/application-local.yml
