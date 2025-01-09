@@ -25,6 +25,7 @@ dependencies {
     implementation 'ch.qos.logback:logback-classic:1.5.12'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.18.2'
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+    implementation 'org.postgresql:postgresql:42.7.4'
     runtimeOnly 'org.postgresql:postgresql'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
