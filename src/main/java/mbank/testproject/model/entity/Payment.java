@@ -1,6 +1,7 @@
-package mbank.testproject.model;
+package mbank.testproject.model.entity;
 
 import jakarta.persistence.*;
+import mbank.testproject.model.enums.StatusType;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -15,7 +16,7 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String type;
+    private StatusType type;
 
     private BigDecimal amount;
 
@@ -28,7 +29,7 @@ public class Payment {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    public Payment(String type, BigDecimal amount, String description, LocalDateTime createdAt) {
+    public Payment(StatusType type, BigDecimal amount, String description, LocalDateTime createdAt) {
         this.type = type;
         this.amount = amount;
         this.description = description;
